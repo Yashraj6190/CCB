@@ -25,7 +25,7 @@ for case in "${q3a_cases[@]}"; do
     sed "s/^Y .*/Y $Y N/" q3a.in | sed "s/^X .*/X $X N/" > q3a_tmp.in
     output=$(./aleae q3a_tmp.in q3a.r $TRIALS -1 0 2>&1)
 
-    # Parse avg line: species order is b,a1,Y,c,Yp,W1,L,X,a2,Lp,Z,W2
+    # Parse avg line: species order is b,a1,Y,c,Yp,phi,L,X,a2,Lp,Z
     avg_line=$(echo "$output" | grep "^avg \[")
     # Extract L (index 6) and Z (index 10)
     avg_L=$(echo "$avg_line" | sed 's/.*L=\([0-9.]*\).*/\1/')
@@ -38,7 +38,7 @@ echo ""
 
 # ─── Q3b: Y = 2^(log2(X)) ───
 echo "=== Q3b Verification (Y = 2^(log₂(X₀))), $TRIALS trials each ==="
-printf "%-6s %-14s %-10s %-10s\n" "X₀" "Expected Y=X₀" "Avg Y" "Avg L (W2)"
+printf "%-6s %-14s %-10s %-10s\n" "X₀" "Expected Y=X₀" "Avg Y" "Avg L (phi)"
 echo "-------------------------------------------"
 
 q3b_cases=("4" "8" "16" "32")
@@ -48,12 +48,12 @@ for X in "${q3b_cases[@]}"; do
     output=$(./aleae q3b_tmp.in q3b.r $TRIALS -1 0 2>&1)
 
     avg_line=$(echo "$output" | grep "^avg \[")
-    # species order: b,a1,X,c,Xp,W1,L,a2,Y,Yp,W2
+    # species order: b,a1,X,c,Xp,phi,L,a2,Y,Yp
     avg_Y=$(echo "$avg_line" | sed 's/.*Y=\([0-9.]*\).*/\1/')
-    # W2 = number of L triggers consumed = effective log2(X)
-    avg_W2=$(echo "$avg_line" | sed 's/.*W2=\([0-9.]*\).*/\1/')
+    # phi = number of trigger molecules consumed = effective log2(X)
+    avg_phi=$(echo "$avg_line" | sed 's/.*phi=\([0-9.]*\).*/\1/')
 
-    printf "%-6s %-14s %-10s %-10s\n" "$X" "$X" "$avg_Y" "$avg_W2"
+    printf "%-6s %-14s %-10s %-10s\n" "$X" "$X" "$avg_Y" "$avg_phi"
 done
 
 echo ""
