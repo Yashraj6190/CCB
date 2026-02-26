@@ -1,0 +1,51 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Course-provided files (not for upload)
+vanilla/aleae
+vanilla/aleae.h
+vanilla/comb.h
+vanilla/aleae_io.cc
+vanilla/aleae_io.o
+vanilla/aleae_main.cc
+vanilla/aleae_main.o
+vanilla/aleae_stoch.cc
+vanilla/aleae_stoch.o
+vanilla/Makefile
+vanilla/README.txt
+vanilla/lambda.in
+vanilla/lambda.r
+vanilla/BernPoly.in
+vanilla/BernPoly.r
+vanilla/stoch.in
+vanilla/stoch.r
+vanilla/log.in
+vanilla/log.r
+vanilla/mult.in
+vanilla/mult.r
+vanilla/test.in
+vanilla/test.r
+
+# Temp files
+vanilla/q3a_tmp.in
+vanilla/q3b_tmp.in
+vanilla/lambda_tmp.in
+
+# Output / scratch
+q2_results.txt
+q3.txt
+run_q2.sh
+test.py
+
+# PDFs and slides
+01.pdf
+ee5393-2026-crns.pdf
+ee5393-2026-crns.pptx
+
+# LaTeX build artifacts
+*.aux
+*.log
+*.out
+*.synctex.gz

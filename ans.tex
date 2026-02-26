@@ -1,0 +1,296 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{times}
+\usepackage[a4paper, top=1cm, bottom=1.5cm, left=2cm, right=2cm]{geometry}
+
+\begin{document}
+
+\begin{center}
+EE 5393 \\
+\textbf{Circuits, Computation, and Biology}\\
+\textbf{Assignment I}\\
+\vspace{0.3cm}
+Name: Yashraj Deepak Patil \\
+Email: patil276@umn.edu\\
+
+\end{center}
+\vspace{0.25mm}
+
+\noindent\textbf{1)}
+
+\medskip
+We are given the following chemical reaction network:
+\begin{align*}
+R_1 &: 2X_1 + X_2 \xrightarrow{k_1 = 1} 4X_3 \\
+R_2 &: X_1 + 2X_3 \xrightarrow{k_2 = 2} 3X_2 \\
+R_3 &: X_2 + X_3 \xrightarrow{k_3 = 3} 2X_1
+\end{align*}
+
+The propensities under the discrete stochastic model are:
+\begin{align*}
+\alpha_1 &= k_1 \binom{x_1}{2} x_2 = \frac{1}{2}\, x_1(x_1 - 1)\, x_2 \\
+\alpha_2 &= k_2\, x_1 \binom{x_3}{2} = x_1\, x_3(x_3 - 1) \\
+\alpha_3 &= k_3\, x_2\, x_3 = 3\, x_2\, x_3
+\end{align*}
+
+The state update vectors are:
+\begin{align*}
+R_1 &: \Delta \mathbf{x} = (-2,\; -1,\; +4) \\
+R_2 &: \Delta \mathbf{x} = (-1,\; +3,\; -2) \\
+R_3 &: \Delta \mathbf{x} = (+2,\; -1,\; -1)
+\end{align*}
+
+At each step the probability of reaction $R_i$ firing is $\Pr(R_i) = \alpha_i / \alpha_0$ where $\alpha_0 = \sum_j \alpha_j$.
+
+\bigskip
+\noindent\textbf{1a)} Starting from the initial state $(x_1, x_2, x_3) = (110, 26, 55)$, we simulate a single trajectory and at each step record whether each condition $C_1, C_2, C_3$ holds. The estimated probability is the fraction of steps in which the condition is true.
+
+\medskip
+\noindent\textit{Manual first iteration:}
+
+At state $(110, 26, 55)$, compute the propensities:
+\begin{align*}
+\alpha_1 &= \tfrac{1}{2}(110)(109)(26) = 155{,}870 \\
+\alpha_2 &= (110)(55)(54) = 326{,}700 \\
+\alpha_3 &= 3(26)(55) = 4{,}290 \\
+\alpha_0 &= 486{,}860
+\end{align*}
+The reaction probabilities are:
+\[
+\Pr(R_1) = 0.3202, \quad \Pr(R_2) = 0.6710, \quad \Pr(R_3) = 0.0088
+\]
+Check conditions at the current state: $C_1$: $110 \geq 150$? No. \; $C_2$: $26 < 10$? No. \; $C_3$: $55 > 100$? No.
+
+Suppose $R_2$ fires (most probable). The state updates to:
+\[
+(110 - 1,\; 26 + 3,\; 55 - 2) = (109, 29, 53)
+\]
+We continue this process. Running $10^5$ steps and averaging:
+
+\begin{center}
+\begin{tabular}{c l c}
+\hline
+Condition & Description & Estimated Probability \\
+\hline
+$C_1$ & $x_1 \geq 150$ & $\approx 0.0000$ \\
+$C_2$ & $x_2 < 10$     & $\approx 0.0000$ \\
+$C_3$ & $x_3 > 100$    & $\approx 0.9695$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\bigskip
+\noindent\textbf{1b)} Starting from the initial state $(x_1, x_2, x_3) = (9, 8, 7)$, we run $10^5$ independent Monte Carlo trials, each of exactly 7 reaction steps, and compute the sample mean and variance of each species at the end.
+
+\medskip
+\noindent\textit{Manual sample trial (one of $10^5$):}
+
+\begin{center}
+\small
+\begin{tabular}{c c c c c c c l c}
+\hline
+Step & $x_1$ & $x_2$ & $x_3$ & $\alpha_1$ & $\alpha_2$ & $\alpha_3$ & Pr$(R_1, R_2, R_3)$ & Fires \\
+\hline
+1 & 9 & 8 & 7  & 288 & 378 & 168 & (0.345, 0.453, 0.201) & $R_2$ \\
+2 & 8 & 11 & 5 & 308 & 160 & 165 & (0.487, 0.253, 0.261) & $R_3$ \\
+3 & 10 & 10 & 4 & 450 & 120 & 120 & (0.652, 0.174, 0.174) & $R_2$ \\
+4 & 9 & 13 & 2 & 468 & 18  & 78  & (0.830, 0.032, 0.138) & $R_1$ \\
+5 & 7 & 12 & 6 & 252 & 210 & 216 & (0.372, 0.310, 0.319) & $R_1$ \\
+6 & 5 & 11 & 10 & 110 & 450 & 330 & (0.124, 0.506, 0.371) & $R_2$ \\
+7 & 4 & 14 & 8 & 84  & 224 & 336 & (0.130, 0.348, 0.522) & $R_1$ \\
+\hline
+\multicolumn{2}{c}{Final:} & \multicolumn{2}{l}{$(2, 13, 12)$} & & & & & \\
+\hline
+\end{tabular}
+\end{center}
+
+\medskip
+Repeating this for $10^5$ independent trials and aggregating:
+
+\begin{center}
+\begin{tabular}{c c c}
+\hline
+Species & Mean & Variance \\
+\hline
+$X_1$ & $5.832$ & $5.914$ \\
+$X_2$ & $12.487$ & $8.957$ \\
+$X_3$ & $7.820$ & $8.933$ \\
+\hline
+\end{tabular}
+\end{center}
+
+\newpage
+\noindent\textbf{2)}
+
+\medskip
+The lambda phage model is provided as two files: \texttt{lambda.in} (61 species with initial quantities and threshold conditions) and \texttt{lambda.r} (117 reactions with rate constants). These are input to the \texttt{aleae} stochastic simulator, which implements the Gillespie algorithm.
+
+I used AI to help me understand the structure of these files and the simulator. Here is what I understood:
+
+\begin{itemize}
+\item The \texttt{.in} file lists each molecular species, its initial count, and optionally a threshold condition (e.g., \texttt{cI2 0 GE 145} means ``track whether cI2 reaches $\geq 145$'').
+\item The \texttt{.r} file lists reactions in the format \texttt{reactants : products : rate}. Each species is given with its stoichiometric coefficient.
+\item The simulator is invoked as: \texttt{./aleae <state.in> <reactions.r> <trials> <time\_limit> <verbosity>}. Setting time limit to $-1$ runs until all propensities are zero (absorbing state). Verbosity $0$ prints only summary statistics.
+\item The model captures the genetic switch between \textit{lysogeny} (stealth) and \textit{lysis} (hijack) after bacteriophage $\lambda$ infects \textit{E.\ coli}. The key species are:
+  \begin{itemize}
+  \item \textbf{cI2} (cI repressor dimer): dominance leads to lysogeny.
+  \item \textbf{Cro2} (Cro protein dimer): dominance leads to lysis.
+  \end{itemize}
+\item The \textbf{Multiplicity of Infection (MOI)} is the initial count of the \texttt{MOI} species in the \texttt{.in} file. It represents the number of phage particles infecting a single bacterium.
+\end{itemize}
+
+The two outcomes are classified by steady-state thresholds:
+\begin{itemize}
+\item \textbf{Stealth (Lysogeny):} cI2 $\geq$ 145
+\item \textbf{Hijack (Lysis):} Cro2 $\geq$ 55
+\end{itemize}
+
+I swept MOI from 1 to 10. For each value, I edited the line \texttt{MOI 2 N} in \texttt{lambda.in} to \texttt{MOI $N$ N} (where $N$ is the desired MOI), recompiled with \texttt{make clean \&\& make}, and ran:
+\begin{verbatim}
+./aleae lambda.in lambda.r 1000 -1 0
+\end{verbatim}
+I repeated this 10 times, once for each MOI value. From the output, I read the lines \texttt{cI2 >= 145: $k$} and \texttt{Cro2 >= 55: $k$} and divided by 1000 to get the probabilities.
+
+The results:
+
+\begin{center}
+\begin{tabular}{c c c}
+\hline
+MOI & Pr(Stealth) & Pr(Hijack) \\
+\hline
+1  & 0.1700 & 0.8300 \\
+2  & 0.1850 & 0.8150 \\
+3  & 0.2360 & 0.7640 \\
+4  & 0.2280 & 0.7720 \\
+5  & 0.2620 & 0.7380 \\
+6  & 0.2660 & 0.7340 \\
+7  & 0.3070 & 0.6930 \\
+8  & 0.3230 & 0.6770 \\
+9  & 0.3390 & 0.6610 \\
+10 & 0.3250 & 0.6750 \\
+\hline
+\end{tabular}
+\end{center}
+
+\medskip
+\noindent\textit{Observations:} As MOI increases, the probability of stealth (lysogeny) increases and the probability of hijack (lysis) decreases. This is biologically consistent: higher MOI means more phage genome copies, which produce more cII and cIII proteins. cII activates the $P_{RE}$ promoter for cI transcription, while cIII stabilizes cII by inhibiting host protease. Together they tip the genetic switch toward cI repressor dominance (lysogeny).
+
+\newpage
+\noindent\textbf{3)}
+
+\medskip
+We design chemical reaction networks that compute mathematical functions using the self-timed module composition pattern from the lectures. The key idea is \textbf{rate separation}. We assign five rate tiers so that each tier completes before the next-slower tier fires:
+\[
+\text{fastest} \;\gg\; \text{fast} \;\gg\; \text{moderate} \;\gg\; \text{slow} \;\gg\; \text{slowest}
+\]
+
+Each module uses a \textbf{trigger species} $a$ that gates one iteration of work:
+\begin{enumerate}
+\item A \textit{slow} reaction produces $a$ (one trigger event).
+\item While $a$ is present, \textit{fastest} reactions perform the computation for that iteration.
+\item A \textit{fast} reaction $a \to W$ (waste) consumes the trigger, ending the iteration.
+\item \textit{Moderate} reactions restore temporary species for the next iteration.
+\end{enumerate}
+The \textit{slowest} rate is reserved for inter-module triggers, ensuring Module~1 finishes entirely before Module~2 starts.
+
+\bigskip
+\noindent\textbf{3a)} Design a CRN that computes $Z_\infty = X_0 \cdot \log_2(Y_0)$.
+
+\medskip
+We chain two modules: a \textbf{log module} that computes $L = \log_2(Y_0)$ by repeated halving, followed by a \textbf{multiplication module} that computes $Z = X_0 \cdot L$.
+
+\medskip
+\noindent\underline{Log Module} (computes $L = \log_2(Y_0)$):
+
+Each trigger $b$ initiates one halving round. While trigger $a_1$ is present, the $Y$ molecules are paired up (consuming 2$Y$, producing 1$c$), then $a_1$ is consumed. After the fastest reactions settle, the $c$ molecules represent $\lfloor Y/2 \rfloor$, which are transferred back via $c \to L$ and $Y' \to Y$. We start with $b = 20$ (enough rounds for inputs up to $2^{20}$); each $b$ is consumed, so exactly 20 rounds run. Extra rounds after $Y$ has stabilized just produce wasteful $a_1 \to W_1$ cycles.
+
+\begin{align*}
+b &\xrightarrow{\text{slow}} a_1 & &\text{(trigger, $b$ consumed)} \\
+a_1 + 2Y &\xrightarrow{\text{fastest}} c + Y' + a_1 & &\text{(pair $Y$ molecules, catalytic on $a_1$)} \\
+2c &\xrightarrow{\text{fastest}} c & &\text{(halve $c$)} \\
+a_1 &\xrightarrow{\text{fast}} W_1 & &\text{(consume trigger)} \\
+Y' &\xrightarrow{\text{moderate}} Y & &\text{(restore $Y$)} \\
+c &\xrightarrow{\text{moderate}} L & &\text{(accumulate into $L$)}
+\end{align*}
+
+\noindent\underline{Multiplication Module} (computes $Z = X_0 \cdot L$):
+
+Each $X$ molecule slowly produces a trigger $a_2$. While $a_2$ is present, all $L$ molecules are copied into $Z$ (and $L'$). Then $a_2$ is consumed, and $L'$ restores $L$ for the next round. After all $X$ are consumed, $Z = X_0 \cdot L$.
+
+\begin{align*}
+X &\xrightarrow{\text{slowest}} a_2 & &\text{(trigger, ensures log module finishes first)} \\
+a_2 + L &\xrightarrow{\text{fastest}} a_2 + L' + Z & &\text{(copy $L$ to $Z$, catalytic on $a_2$)} \\
+a_2 &\xrightarrow{\text{fast}} W_2 & &\text{(consume trigger)} \\
+L' &\xrightarrow{\text{moderate}} L & &\text{(restore $L$)}
+\end{align*}
+
+\noindent Initial state: $b = 20$, $Y = Y_0$, $X = X_0$, all other species $= 0$.
+
+\medskip
+\noindent\textit{Verification} (100 trials each via \texttt{aleae}):
+
+\begin{center}
+\begin{tabular}{c c c c c}
+\hline
+$X_0$ & $Y_0$ & Expected $Z$ & Avg $Z$ & Avg $L$ \\
+\hline
+3 & 8   & 9  & 9.35  & 3.20 \\
+4 & 16  & 16 & 16.74 & 4.26 \\
+2 & 32  & 10 & 11.09 & 5.56 \\
+5 & 4   & 10 & 10.47 & 2.12 \\
+1 & 64  & 6  & 6.59  & 6.72 \\
+\hline
+\end{tabular}
+\end{center}
+
+The small upward bias ($\sim$5--10\%) is due to stochastic noise in the halving rounds: occasionally an extra $c$ survives, incrementing $L$ by 1, which then gets multiplied by $X_0$.
+
+\bigskip
+\noindent\textbf{3b)} Design a CRN that computes $Y_\infty = 2^{\log_2(X_0)}$.
+
+\medskip
+We chain a \textbf{log module} (computing $L = \log_2(X_0)$) with an \textbf{exponentiation module} (computing $Y = 2^L$). Note that mathematically $2^{\log_2(X_0)} = X_0$, but the problem requires computing it through the composition of log and exponentiation.
+
+\medskip
+\noindent\underline{Log Module} (computes $L = \log_2(X_0)$): Same structure as 3a, but operating on $X$ instead of $Y$.
+
+\begin{align*}
+b &\xrightarrow{\text{slow}} a_1 & &\text{(\textit{slow})} \\
+a_1 + 2X &\xrightarrow{\text{fastest}} c + X' + a_1 & &\text{(\textit{fastest})} \\
+2c &\xrightarrow{\text{fastest}} c & &\text{(\textit{fastest})} \\
+a_1 &\xrightarrow{\text{fast}} W_1 & &\text{(\textit{fast})} \\
+X' &\xrightarrow{\text{moderate}} X & &\text{(\textit{moderate})} \\
+c &\xrightarrow{\text{moderate}} L & &\text{(\textit{moderate})}
+\end{align*}
+
+\noindent\underline{Exponentiation Module} (computes $Y = 2^L$): Each $L$ molecule triggers one doubling of $Y$. While trigger $a_2$ is present, each $Y$ is replaced by $2Y'$, then $a_2$ is consumed and $Y'$ restores to $Y$. Starting from $Y_0 = 1$, after $L$ rounds, $Y = 2^L$.
+
+\begin{align*}
+L &\xrightarrow{\text{slowest}} a_2 & &\text{(ensures log module finishes first)} \\
+a_2 + Y &\xrightarrow{\text{fastest}} a_2 + 2Y' & &\text{(double $Y$, catalytic on $a_2$)} \\
+a_2 &\xrightarrow{\text{fast}} W_2 & &\text{(consume trigger)} \\
+Y' &\xrightarrow{\text{moderate}} Y & &\text{(restore $Y$)}
+\end{align*}
+
+\noindent Initial state: $b = 20$, $X = X_0$, $Y = 1$, all other species $= 0$.
+
+\medskip
+\noindent\textit{Verification} (100 trials each via \texttt{aleae}):
+
+\begin{center}
+\begin{tabular}{c c c c}
+\hline
+$X_0$ & Expected $Y = X_0$ & Avg $Y$ & Avg $L$ \\
+\hline
+4  & 4  & 4.88  & 2.08 \\
+8  & 8  & 11.84 & 3.21 \\
+16 & 16 & 26.84 & 4.43 \\
+32 & 32 & 58.15 & 5.41 \\
+\hline
+\end{tabular}
+\end{center}
+
+The averages are biased upward because the stochastic noise in $L$ is \textit{amplified exponentially} by the $2^L$ module: if $L$ is off by $+1$, the output doubles. Nevertheless, the mode (most frequent value) of $Y$ matches $X_0$ in each case, confirming the CRN computes the correct function.
+
+\end{document}
