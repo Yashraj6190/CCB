@@ -3,6 +3,7 @@
 \usepackage{amsmath, amssymb, amsfonts}
 \usepackage{times}
 \usepackage[a4paper, top=1cm, bottom=1.5cm, left=2cm, right=2cm]{geometry}
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}
 
 \begin{document}
 
@@ -120,6 +121,9 @@ $X_3$ & $7.820$ & $8.933$ \\
 \end{tabular}
 \end{center}
 
+\medskip
+\noindent\textit{Code:} \href{https://github.com/Yashraj6190/CCB/blob/main/CCB_p1.py}{\texttt{CCB\_p1.py}}
+
 \newpage
 \noindent\textbf{2)}
 
@@ -151,6 +155,8 @@ I swept MOI from 1 to 10. For each value, I edited the line \texttt{MOI 2 N} in 
 ./aleae lambda.in lambda.r 1000 -1 0
 \end{verbatim}
 I repeated this 10 times, once for each MOI value. From the output, I read the lines \texttt{cI2 >= 145: $k$} and \texttt{Cro2 >= 55: $k$} and divided by 1000 to get the probabilities.
+
+\noindent\textit{Code:} \href{https://github.com/Yashraj6190/CCB/blob/main/CCB_p2.py}{\texttt{CCB\_p2.py}} \quad \href{https://github.com/Yashraj6190/CCB/blob/main/run_q2_verify.sh}{\texttt{run\_q2\_verify.sh}}
 
 The results:
 
@@ -228,6 +234,9 @@ L' &\xrightarrow{\text{moderate}} L & &\text{(restore $L$)}
 \noindent Initial state: $b = 20$, $Y = Y_0$, $X = X_0$, all other species $= 0$.
 
 \medskip
+\noindent\textit{Code:} \href{https://github.com/Yashraj6190/CCB/blob/main/vanilla/q3a.r}{\texttt{vanilla/q3a.r}} \quad \href{https://github.com/Yashraj6190/CCB/blob/main/vanilla/q3a.in}{\texttt{vanilla/q3a.in}} \quad \href{https://github.com/Yashraj6190/CCB/blob/main/run_q3_verify.sh}{\texttt{run\_q3\_verify.sh}}
+
+\medskip
 \noindent\textit{Verification} (100 trials each via \texttt{aleae}):
 
 \begin{center}
@@ -274,6 +283,9 @@ Y' &\xrightarrow{\text{moderate}} Y & &\text{(restore $Y$)}
 \end{align*}
 
 \noindent Initial state: $b = 20$, $X = X_0$, $Y = 1$, all other species $= 0$.
+
+\medskip
+\noindent\textit{Code:} \href{https://github.com/Yashraj6190/CCB/blob/main/vanilla/q3b.r}{\texttt{vanilla/q3b.r}} \quad \href{https://github.com/Yashraj6190/CCB/blob/main/vanilla/q3b.in}{\texttt{vanilla/q3b.in}}
 
 \medskip
 \noindent\textit{Verification} (100 trials each via \texttt{aleae}):
