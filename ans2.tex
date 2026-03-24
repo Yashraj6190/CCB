@@ -1,0 +1,245 @@
+\documentclass[12pt]{article}
+
+\usepackage{amsmath, amssymb, amsfonts}
+\usepackage{times}
+\usepackage[a4paper, top=1cm, bottom=1.5cm, left=2cm, right=2cm]{geometry}
+\usepackage[colorlinks=true, linkcolor=blue, urlcolor=blue]{hyperref}
+
+\begin{document}
+
+\begin{center}
+EE 5393 \\
+\textbf{Circuits, Computation, and Biology}\\
+\textbf{Assignment II}\\
+\vspace{0.3cm}
+Name: Yashraj Deepak Patil \\
+Email: patil276@umn.edu\\
+
+\end{center}
+\vspace{0.25mm}
+
+\noindent\textbf{1) Iteration: Fibonacci for exactly 12 steps}
+
+\medskip
+I design a clocked CRN with two state registers $A,B$ representing consecutive Fibonacci values. The update in each iteration is
+\[
+(A,B) \leftarrow (B, A+B).
+\]
+To force exactly 12 iterations, I use a step-counter species $S$ with initial count 12. One molecule of $S$ is consumed per iteration.
+
+\medskip
+\noindent\underline{CRN design}
+\begin{align*}
+S &\xrightarrow{k_{\text{slow}}} u \\
+u + A &\xrightarrow{k_{\text{fast}}} u + C \\
+u + B &\xrightarrow{k_{\text{fast}}} u + A' + C \\
+u &\xrightarrow{k_{\text{fast}}} v \\
+v + A' &\xrightarrow{k_{\text{fast}}} v + A \\
+v + C &\xrightarrow{k_{\text{fast}}} v + B \\
+v &\xrightarrow{k_{\text{fast}}} \phi
+\end{align*}
+Here $u$ is the per-iteration trigger, $C$ accumulates $A+B$, $A'$ accumulates $B$, and $v$ marks the restore phase. Because $S$ starts at 12 and is consumed, exactly 12 updates occur.
+
+\medskip
+\noindent\underline{Why this implements Fibonacci}
+
+Assume current state $(A_k,B_k)$. During the active phase:
+\[
+A' = B_k, \qquad C = A_k + B_k.
+\]
+During restore:
+\[
+A_{k+1} = A' = B_k, \qquad B_{k+1} = C = A_k + B_k.
+\]
+Therefore the recurrence is exactly Fibonacci.
+
+\medskip
+\noindent\underline{Demonstration for start values $(0,1)$}
+
+First, I show the first two iterations explicitly using the CRN reactions.
+
+\medskip
+\noindent\textit{Iteration 1: start $(A,B)=(0,1)$}
+\begin{itemize}
+\item Active phase: $u + A \to u + C$ does not fire (no $A$ molecules).
+\item Active phase: $u + B \to u + A' + C$ fires once, so $A'=1$, $C=1$, and $B$ is consumed.
+\item Restore phase: $v + A' \to v + A$ and $v + C \to v + B$ restore to $(A,B)=(1,1)$.
+\end{itemize}
+
+\noindent\textit{Iteration 2: start $(A,B)=(1,1)$}
+\begin{itemize}
+\item $u + A \to u + C$ fires once, giving $C=1$.
+\item $u + B \to u + A' + C$ fires once, so $A'=1$ and $C=2$.
+\item Restore gives $(A,B)=(1,2)$.
+\end{itemize}
+
+After this manual check, I ran the full 12-step simulation (script: \texttt{hw2\_q1\_fibonacci.py}, GitHub: \url{https://github.com/Yashraj6190/CCB/blob/main/hw2_q1_fibonacci.py}) and recorded the register pair after each update.
+
+\begin{center}
+\begin{tabular}{c c c}
+\hline
+Step $k$ & $A_k$ & $B_k$ \\
+\hline
+0 & 0 & 1 \\
+1 & 1 & 1 \\
+2 & 1 & 2 \\
+3 & 2 & 3 \\
+4 & 3 & 5 \\
+5 & 5 & 8 \\
+6 & 8 & 13 \\
+7 & 13 & 21 \\
+8 & 21 & 34 \\
+9 & 34 & 55 \\
+10 & 55 & 89 \\
+11 & 89 & 144 \\
+12 & 144 & 233 \\
+\hline
+\end{tabular}
+\end{center}
+The assignment target is obtained: after 12 updates, the first register is $A_{12}=144$.
+
+\medskip
+\noindent\underline{Demonstration for start values $(3,7)$}
+
+Again, the first two iterations are shown directly from the reaction sets.
+
+\medskip
+\noindent\textit{Iteration 1: start $(A,B)=(3,7)$}
+\begin{itemize}
+\item $u + A \to u + C$ fires 3 times, contributing $C=3$.
+\item $u + B \to u + A' + C$ fires 7 times, contributing $A'=7$ and another $C=7$.
+\item Totals after active phase: $A'=7$, $C=10$; restore gives $(A,B)=(7,10)$.
+\end{itemize}
+
+\noindent\textit{Iteration 2: start $(A,B)=(7,10)$}
+\begin{itemize}
+\item $u + A \to u + C$ fires 7 times.
+\item $u + B \to u + A' + C$ fires 10 times.
+\item Totals: $A'=10$, $C=17$; restore gives $(A,B)=(10,17)$.
+\end{itemize}
+
+Then I run the full 12-step code and record all states:
+
+\begin{center}
+\begin{tabular}{c c c}
+\hline
+Step $k$ & $A_k$ & $B_k$ \\
+\hline
+0 & 3 & 7 \\
+1 & 7 & 10 \\
+2 & 10 & 17 \\
+3 & 17 & 27 \\
+4 & 27 & 44 \\
+5 & 44 & 71 \\
+6 & 71 & 115 \\
+7 & 115 & 186 \\
+8 & 186 & 301 \\
+9 & 301 & 487 \\
+10 & 487 & 788 \\
+11 & 788 & 1275 \\
+12 & 1275 & 2063 \\
+\hline
+\end{tabular}
+\end{center}
+So after 12 updates, $A_{12}=1275$ and $B_{12}=2063$.
+
+\newpage
+\noindent\textbf{2) Sequential Computation: Biquad filter in 3-phase style}
+
+\medskip
+From Figure 2, I use the biquad recurrence with equal coefficients:
+\[
+y[n] = \frac{1}{8}\Big(x[n] + x[n-1] + x[n-2] + y[n-1] + y[n-2]\Big).
+\]
+This uses two input delays and two output delays.
+
+\medskip
+\noindent\underline{CRN building blocks}
+
+I now name the species exactly by function in the Figure 2 three-phase cycle.
+
+Registers/state species: $X$ (current input), $X_1=x[n-1]$, $X_2=x[n-2]$, $Y_1=y[n-1]$, $Y_2=y[n-2]$, and output accumulator $Y$.
+
+Temporary branch species (one per tap): $T_X,T_{X1},T_{X2},T_{Y1},T_{Y2}$.
+
+Scaled branch species: $S_X,S_{X1},S_{X2},S_{Y1},S_{Y2}$, each representing one tap multiplied by $1/8$.
+
+Phase catalysts: $R$ (copy/fanout), $G$ (scale/accumulate), $B$ (delay update).
+
+\medskip
+\noindent\textit{Phase R (red): copy/fanout of current and delayed values}
+\begin{align*}
+R + X &\to R + T_X \\
+R + X_1 &\to R + T_{X1} \\
+R + X_2 &\to R + T_{X2} \\
+R + Y_1 &\to R + T_{Y1} \\
+R + Y_2 &\to R + T_{Y2}
+\end{align*}
+
+\noindent\textit{Phase G (green): three halvings for each $1/8$, then accumulation into $Y$}
+
+For every branch $U\in\{T_X,T_{X1},T_{X2},T_{Y1},T_{Y2}\}$, use the same 3-stage halving chain:
+\begin{align*}
+2U &\to U^{(1)} \\
+2U^{(1)} &\to U^{(2)} \\
+2U^{(2)} &\to U^{(3)}
+\end{align*}
+and identify
+\[
+S_X=T_X^{(3)},\;S_{X1}=T_{X1}^{(3)},\;S_{X2}=T_{X2}^{(3)},\;S_{Y1}=T_{Y1}^{(3)},\;S_{Y2}=T_{Y2}^{(3)}.
+\]
+So each branch contributes exactly a factor $1/8$.
+
+Accumulate the five scaled branches into output species $Y$:
+\begin{align*}
+G + S_X &\to G + Y \\
+G + S_{X1} &\to G + Y \\
+G + S_{X2} &\to G + Y \\
+G + S_{Y1} &\to G + Y \\
+G + S_{Y2} &\to G + Y
+\end{align*}
+
+\noindent\textit{Phase B (blue): two delay chains (input and output)}
+
+Input-delay chain update ($X_2\leftarrow X_1$, then $X_1\leftarrow X$):
+\begin{align*}
+B + X_1 &\to B + X_2 \\
+B + X   &\to B + X_1
+\end{align*}
+
+Output-delay chain update ($Y_2\leftarrow Y_1$, then $Y_1\leftarrow Y$):
+\begin{align*}
+B + Y_1 &\to B + Y_2 \\
+B + Y   &\to B + Y_1
+\end{align*}
+
+The phase ordering $R\rightarrow G\rightarrow B$ is one full clock cycle: copy taps, compute weighted sum into $Y$, then shift both delay chains.
+
+\medskip
+\noindent\underline{5-cycle simulation with required input sequence}
+
+Inputs are $x = [100,\,5,\,500,\,20,\,250]$, with initial delays $x[-1]=x[-2]=0$, $y[-1]=y[-2]=0$.
+As clarified in the course announcement, I ran exactly 5 cycles (not 10).
+
+\begin{center}
+\begin{tabular}{c c c}
+\hline
+Cycle $n$ & Input $x[n]$ & Output $y[n]$ \\
+\hline
+1 & 100 & 12.500000 \\
+2 & 5   & 14.687500 \\
+3 & 500 & 79.023438 \\
+4 & 20  & 77.338867 \\
+5 & 250 & 115.795288 \\
+\hline
+\end{tabular}
+\end{center}
+
+These values are generated by the cycle-by-cycle script \texttt{hw2\_q2\_biquad.py} (GitHub: \url{https://github.com/Yashraj6190/CCB/blob/main/hw2_q2_biquad.py}). This script also follows the assignment instruction to process one input at a time, record $Y$, clear $Y$, and continue with updated delay states.
+
+\bigskip
+\noindent\textbf{AI usage declaration}
+
+I used AI to help structure this write-up and to generate/check simulation code for the tables. I verified the final numeric values by running the script directly.
+
+\end{document}
